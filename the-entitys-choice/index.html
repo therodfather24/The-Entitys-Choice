@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Entity's Choice</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="fog-bank" aria-hidden="true">
+    <div class="fog-layer fog-layer-back"></div>
+    <div class="fog-layer fog-layer-mid"></div>
+    <div class="fog-layer fog-layer-front"></div>
+</div>
+
+<main class="app-shell">
+
+    <section class="hero">
+
+        <p class="eyebrow">Dead by Daylight</p>
+        <h1>The Entity's Choice</h1>
+        <h2>Killer Randomizer</h2>
+
+        <div id="remaining" class="remaining">
+            Remaining Killers: 5 / 5
+        </div>
+
+        <div class="progress-panel" aria-label="Killer progress">
+            <div id="progressText" class="progress-text">0 selected</div>
+            <div class="progress-track">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+        </div>
+
+        <div id="portrait" class="portrait-frame">
+            <img
+                id="killerImage"
+                src=""
+                alt="Killer Portrait"
+            >
+        </div>
+
+        <div id="killerDisplay" class="killer-name">
+            The Fog Waits
+        </div>
+
+        <div class="buttons">
+
+            <button id="randomButton" class="primary-button">
+                Random Killer
+            </button>
+
+            <button id="resetButton" class="secondary-button">
+                Reset Pool
+            </button>
+
+        </div>
+
+        <label class="mode-toggle" for="removePickedToggle">
+            <span class="mode-toggle-text">Remove picked killers</span>
+            <input id="removePickedToggle" type="checkbox" checked>
+            <span class="mode-toggle-track" aria-hidden="true">
+                <span class="mode-toggle-thumb"></span>
+            </span>
+        </label>
+
+        <section class="gallery-section" aria-labelledby="galleryTitle">
+            <h3 id="galleryTitle">Killer Gallery</h3>
+            <p id="gallerySubtitle" class="gallery-subtitle">Selected killers are claimed by the Entity until the pool resets.</p>
+
+            <div id="killerGallery" class="killer-gallery"></div>
+        </section>
+
+    </section>
+
+    <aside class="recent-panel" aria-labelledby="recentTitle">
+        <h3 id="recentTitle">Recently Played</h3>
+        <div id="recentList" class="recent-list"></div>
+    </aside>
+
+</main>
+
+<section id="endScreen" class="end-screen" aria-labelledby="endScreenTitle" aria-hidden="true">
+    <div class="end-screen-panel">
+        <p class="end-eyebrow">All trials claimed</p>
+        <h2 id="endScreenTitle">The Entity Is Satisfied</h2>
+        <div id="endFinalKiller" class="end-final-killer" hidden>
+            <span>Final Killer</span>
+            <strong id="endFinalName"></strong>
+        </div>
+        <p class="end-copy">
+            Every available killer has been chosen. Reset the pool to begin another cycle.
+        </p>
+        <button id="endResetButton" class="primary-button">
+            Reset Pool
+        </button>
+    </div>
+</section>
+
+<script src="killers.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
