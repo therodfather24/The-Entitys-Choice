@@ -1,0 +1,10 @@
+# Local editor files
+.vscode/
+
+# OS metadata
+Thumbs.db
+Desktop.ini
+
+# Temporary files
+*.tmp
+*.bak

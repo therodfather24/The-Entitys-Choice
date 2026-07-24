@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Entity's Choice</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="fog-bank" aria-hidden="true">
+    <div class="fog-layer fog-layer-back"></div>
+    <div class="fog-layer fog-layer-mid"></div>
+    <div class="fog-layer fog-layer-front"></div>
+</div>
+
+<main class="app-shell">
+
+    <section class="hero">
+
+        <p class="eyebrow">Dead by Daylight</p>
+        <h1>The Entity's Choice</h1>
+        <h2>Killer Randomizer</h2>
+
+        <div id="remaining" class="remaining">
+            Remaining Killers: 5 / 5
+        </div>
+
+        <div class="progress-panel" aria-label="Killer progress">
+            <div id="progressText" class="progress-text">0 selected</div>
+            <div class="progress-track">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+        </div>
+
+        <section class="cycle-summary" aria-labelledby="cycleSummaryTitle">
+            <h3 id="cycleSummaryTitle">Current Cycle</h3>
+            <div id="cycleSummaryGrid" class="cycle-summary-grid"></div>
+        </section>
+
+        <div id="portrait" class="portrait-frame">
+            <img
+                id="killerImage"
+                src=""
+                alt="Killer Portrait"
+            >
+        </div>
+
+        <div id="killerDisplay" class="killer-name">
+            The Fog Waits
+        </div>
+
+        <div id="selectedKillerStats" class="selected-killer-stats" hidden></div>
+        <div id="challengeDisplay" class="challenge-display" hidden></div>
+
+        <div class="buttons">
+
+            <button id="randomButton" class="primary-button">
+                Random Killer
+            </button>
+
+            <button id="resetButton" class="secondary-button">
+                Reset Pool
+            </button>
+
+        </div>
+
+        <details class="settings-panel">
+            <summary>Settings</summary>
+
+            <div class="settings-grid">
+                <label class="mode-toggle" for="removePickedToggle">
+                    <span class="mode-toggle-text">Remove picked killers</span>
+                    <input id="removePickedToggle" type="checkbox" checked>
+                    <span class="mode-toggle-track" aria-hidden="true">
+                        <span class="mode-toggle-thumb"></span>
+                    </span>
+                </label>
+
+                <label class="mode-toggle" for="challengeModeToggle">
+                    <span class="mode-toggle-text">Challenge mode</span>
+                    <input id="challengeModeToggle" type="checkbox">
+                    <span class="mode-toggle-track" aria-hidden="true">
+                        <span class="mode-toggle-thumb"></span>
+                    </span>
+                </label>
+
+                <div class="settings-card challenge-settings-card">
+                    <div class="settings-card-heading">
+                        <span class="settings-card-title">Challenge Types</span>
+                        <span class="settings-card-note">Choose what can roll</span>
+                    </div>
+                    <div class="challenge-category-grid" aria-label="Challenge types">
+                        <label>
+                            <input id="challengeLoadoutToggle" type="checkbox" checked>
+                            Loadout
+                        </label>
+                        <label>
+                            <input id="challengePlaystyleToggle" type="checkbox" checked>
+                            Playstyle
+                        </label>
+                        <label>
+                            <input id="challengePressureToggle" type="checkbox" checked>
+                            Pressure
+                        </label>
+                        <label>
+                            <input id="challengeMercyToggle" type="checkbox" checked>
+                            Mercy
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-card owned-killers-card">
+                    <div class="settings-card-heading">
+                        <span class="settings-card-title">Owned Killers</span>
+                        <span id="ownedKillerCount" class="settings-card-note"></span>
+                    </div>
+                    <div id="ownedKillerList" class="owned-killer-list" aria-label="Owned killers"></div>
+                </div>
+
+                <div class="settings-card">
+                    <span class="settings-card-title">Tracked Fields</span>
+                    <div class="stats-settings settings-stats-settings" aria-label="Stats to track">
+                        <label>
+                            <input id="trackKillsToggle" type="checkbox" checked>
+                            Kills
+                        </label>
+                        <label>
+                            <input id="trackGeneratorsToggle" type="checkbox" checked>
+                            Generators
+                        </label>
+                        <label>
+                            <input id="trackMapToggle" type="checkbox" checked>
+                            Map
+                        </label>
+                        <label>
+                            <input id="trackNotesToggle" type="checkbox" checked>
+                            Notes
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <span class="settings-card-title">Save Data</span>
+                    <div class="settings-actions">
+                        <button id="exportSaveButton" class="compact-button" type="button">
+                            Export
+                        </button>
+                        <button id="importSaveButton" class="compact-button" type="button">
+                            Import
+                        </button>
+                        <input id="importSaveInput" type="file" accept="application/json,.json" hidden>
+                    </div>
+                </div>
+
+                <div class="settings-card safety-settings-card">
+                    <div class="settings-card-heading">
+                        <span class="settings-card-title">Safety Tools</span>
+                        <span class="settings-card-note">Saved in this browser</span>
+                    </div>
+                    <div class="settings-actions safety-actions">
+                        <button id="resetSetupButton" class="compact-button" type="button">
+                            Reset Setup
+                        </button>
+                        <button id="clearProgressButton" class="compact-button danger-button" type="button">
+                            Clear Progress
+                        </button>
+                        <button id="clearAppDataButton" class="compact-button danger-button" type="button">
+                            Clear All Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <section id="matchTracker" class="match-tracker" aria-labelledby="matchTrackerTitle" hidden>
+            <div class="section-heading-row">
+                <div>
+                    <h3 id="matchTrackerTitle">Track Killer Match</h3>
+                    <p id="trackingKillerName">Select a killer to track a match.</p>
+                </div>
+                <button id="toggleTrackerButton" class="compact-button" type="button">
+                    Track
+                </button>
+            </div>
+
+            <form id="matchForm" class="match-form" hidden>
+                <div class="match-fields">
+                    <label id="killsField">
+                        <span>Kills</span>
+                        <select id="killsInput">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </label>
+
+                    <label id="generatorsField">
+                        <span>Generators Left</span>
+                        <select id="generatorsInput">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </label>
+
+                    <label id="mapField">
+                        <span>Map</span>
+                        <input id="mapInput" type="text" placeholder="Optional" list="mapOptions" autocomplete="off">
+                    </label>
+                </div>
+
+                <datalist id="mapOptions">
+                    <option value="Azarov's Resting Place"></option>
+                    <option value="Blood Lodge"></option>
+                    <option value="Coal Tower"></option>
+                    <option value="Dead Dawg Saloon"></option>
+                    <option value="Disturbed Ward"></option>
+                    <option value="Eyrie of Crows"></option>
+                    <option value="Father Campbell's Chapel"></option>
+                    <option value="Fractured Cowshed"></option>
+                    <option value="Garden of Joy"></option>
+                    <option value="Grim Pantry"></option>
+                    <option value="Groaning Storehouse"></option>
+                    <option value="Haddonfield"></option>
+                    <option value="Ironworks of Misery"></option>
+                    <option value="Lampkin Lane"></option>
+                    <option value="Lery's Memorial Institute"></option>
+                    <option value="Midwich Elementary School"></option>
+                    <option value="Mother's Dwelling"></option>
+                    <option value="Mount Ormond Resort"></option>
+                    <option value="Raccoon City Police Station"></option>
+                    <option value="Rotten Fields"></option>
+                    <option value="Sanctum of Wrath"></option>
+                    <option value="Shattered Square"></option>
+                    <option value="Shelter Woods"></option>
+                    <option value="The Game"></option>
+                    <option value="The Pale Rose"></option>
+                    <option value="The Temple of Purgation"></option>
+                    <option value="Thompson House"></option>
+                    <option value="Toba Landing"></option>
+                    <option value="Treatment Theatre"></option>
+                    <option value="Wreckers' Yard"></option>
+                </datalist>
+
+                <label id="notesField" class="notes-field">
+                    <span>Notes</span>
+                    <textarea id="notesInput" rows="3" placeholder="Optional match notes"></textarea>
+                </label>
+
+                <div class="form-actions">
+                    <button id="saveMatchButton" class="primary-button compact-action" type="submit">
+                        Save Match
+                    </button>
+                    <button id="cancelTrackerButton" class="secondary-button compact-action" type="button">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <section class="stats-section" aria-labelledby="statsTitle">
+            <div class="section-heading-row">
+                <div>
+                    <h3 id="statsTitle">Killer Stats</h3>
+                    <p>Optional match tracking saved in this browser.</p>
+                </div>
+                <div class="stats-controls">
+                    <div class="stats-filter-group">
+                        <select id="statsKillerSelect" aria-label="Choose killer stats"></select>
+                        <select id="statsDateFilter" aria-label="Choose stats date range">
+                            <option value="all">All Time</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                            <option value="cycle">Current Cycle</option>
+                        </select>
+                    </div>
+                    <div class="stats-action-group">
+                        <button id="toggleHistoryButton" class="compact-button" type="button">
+                            Show History
+                        </button>
+                    </div>
+                    <div class="stats-danger-group">
+                        <button id="clearSelectedStatsButton" class="compact-button danger-button" type="button">
+                            Clear Killer
+                        </button>
+                        <button id="clearStatsButton" class="compact-button danger-button" type="button">
+                            Clear All
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="statsSummary" class="stats-summary"></div>
+            <div id="matchHistory" class="match-history"></div>
+        </section>
+
+        <section class="gallery-section" aria-labelledby="galleryTitle">
+            <h3 id="galleryTitle">Killer Gallery</h3>
+            <p id="gallerySubtitle" class="gallery-subtitle">Selected killers are claimed by the Entity until the pool resets.</p>
+
+            <div id="killerGallery" class="killer-gallery"></div>
+        </section>
+
+        <footer class="app-footer">
+            <span class="version-label">v1.8</span>
+            Unofficial fan-made Dead by Daylight randomizer by The Rodfather. Not affiliated with or endorsed by Behaviour Interactive.
+        </footer>
+
+    </section>
+
+    <aside class="recent-panel" aria-labelledby="recentTitle">
+        <h3 id="recentTitle">Recently Played</h3>
+        <div id="recentList" class="recent-list"></div>
+    </aside>
+
+</main>
+
+<section id="setupScreen" class="setup-screen" aria-labelledby="setupTitle" aria-hidden="true">
+    <div class="setup-panel">
+        <p class="end-eyebrow">First run</p>
+        <h2 id="setupTitle">Enter The Fog</h2>
+        <p class="setup-copy">
+            Pick your defaults once. You can adjust owned killers and every other option later in Settings.
+        </p>
+
+        <div class="setup-options">
+            <label class="mode-toggle setup-toggle" for="setupRemovePickedToggle">
+                <span class="mode-toggle-text">Remove picked killers</span>
+                <input id="setupRemovePickedToggle" type="checkbox" checked>
+                <span class="mode-toggle-track" aria-hidden="true">
+                    <span class="mode-toggle-thumb"></span>
+                </span>
+            </label>
+
+            <label class="mode-toggle setup-toggle" for="setupChallengeToggle">
+                <span class="mode-toggle-text">Challenge mode</span>
+                <input id="setupChallengeToggle" type="checkbox">
+                <span class="mode-toggle-track" aria-hidden="true">
+                    <span class="mode-toggle-thumb"></span>
+                </span>
+            </label>
+
+        </div>
+
+        <button id="finishSetupButton" class="primary-button">
+            Start Randomizing
+        </button>
+    </div>
+</section>
+
+<section id="endScreen" class="end-screen" aria-labelledby="endScreenTitle" aria-hidden="true">
+    <div class="end-screen-panel">
+        <p class="end-eyebrow">All trials claimed</p>
+        <h2 id="endScreenTitle">The Entity Is Satisfied</h2>
+        <div id="endFinalKiller" class="end-final-killer" hidden>
+            <span>Final Killer</span>
+            <strong id="endFinalName"></strong>
+        </div>
+        <p class="end-copy">
+            Every available killer has been chosen. Reset the pool to begin another cycle.
+        </p>
+        <button id="endResetButton" class="primary-button">
+            Reset Pool
+        </button>
+    </div>
+</section>
+
+<script src="killers.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
