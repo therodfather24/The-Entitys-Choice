@@ -28,7 +28,7 @@ It chooses a random killer, removes that killer from the available pool, remembe
 - End-of-pool completion screen
 - Saved progress with browser localStorage
 - DVVEET portrait pack support where available
-- Small fan-project footer crediting The Rodfather
+- Small fan-project footer crediting The Rodfather and DVVEET's Portrait Pack
 
 ## How To Use It
 
@@ -39,6 +39,12 @@ For the best development experience, open the folder in VS Code and use the Live
 On first launch, choose whether picked killers should be removed from the pool and whether Challenge Mode should be enabled. You can change both later in `Settings`.
 
 Use `Settings -> Owned Killers` to turn off killers you do not own. They will stay visible in the gallery, but they will not appear in random rolls.
+
+## Credits
+
+- App created by The Rodfather.
+- Killer portrait artwork credited to DVVEET's Portrait Pack.
+- This is an unofficial fan project and is not affiliated with or endorsed by Behaviour Interactive.
 
 ## Sharing With A Friend
 

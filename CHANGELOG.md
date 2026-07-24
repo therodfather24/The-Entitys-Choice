@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.8.3 - Portrait Credit
+
+### Added
+- Added visible footer credit for DVVEET's Portrait Pack.
+- Added DVVEET portrait attribution to README and portrait notes.
+
+## v1.8.2 - Current Map Suggestions
+
+### Changed
+- Removed Haddonfield/Lampkin Lane from the match-tracking map suggestions after the Halloween Chapter removal.
+- Added Trickster's Delusion and expanded the map suggestion list with newer/current maps.
+
 ## v1.8.1 - Last Killer Quick Pick
 
 ### Changed

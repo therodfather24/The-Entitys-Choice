@@ -1540,6 +1540,14 @@ h2{
     text-align:center;
 }
 
+.app-footer span:not(.version-label){
+    display:block;
+}
+
+.credit-line{
+    color:#9f978c;
+}
+
 .version-label{
     display:inline-flex;
     align-items:center;

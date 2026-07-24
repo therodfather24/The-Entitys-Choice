@@ -7,6 +7,10 @@
 - The Cenobite has a DVVEET portrait, but remains not selectable by default.
 - The Ghoul, The Animatronic/Springtrap, The Krasue, The First, and The Slasher use the updated installed DVVEET portraits.
 
+## Credit
+- Killer portrait artwork is credited to DVVEET's Portrait Pack.
+- The Entity's Choice is an unofficial fan project and is not affiliated with DVVEET, Behaviour Interactive, or Dead by Daylight.
+
 ## Filename Pattern
 Portraits live in:
 
