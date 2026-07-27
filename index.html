@@ -57,6 +57,50 @@
         <div id="selectedKillerStats" class="selected-killer-stats" hidden></div>
         <div id="challengeDisplay" class="challenge-display" hidden></div>
 
+        <details id="perkBuildPanel" class="perk-build-panel" hidden>
+            <summary>
+                <span>Random Perk Build</span>
+                <small>Optional</small>
+            </summary>
+
+            <div class="section-heading-row">
+                <div>
+                    <h3>Random Perk Build</h3>
+                    <p>Rolls four perks from killers marked as owned.</p>
+                </div>
+                <button id="rollPerksButton" class="compact-button" type="button">
+                    Roll Perks
+                </button>
+            </div>
+
+            <div class="perk-build-controls">
+                <label>
+                    <span>Perk Style</span>
+                    <select id="perkStyleSelect">
+                        <option value="balanced">Balanced</option>
+                        <option value="slowdown">Slowdown</option>
+                        <option value="aura">Aura / Info</option>
+                        <option value="chase">Chase</option>
+                        <option value="stealth">Stealth</option>
+                        <option value="hex">Hex</option>
+                        <option value="scourge-hook">Scourge Hook</option>
+                        <option value="endgame">Endgame</option>
+                        <option value="chaos">Chaos</option>
+                    </select>
+                </label>
+                <button id="clearPerkBuildButton" class="compact-action" type="button">
+                    Clear
+                </button>
+            </div>
+
+            <div id="perkBuildMeta" class="perk-build-meta" aria-label="Build details"></div>
+            <div id="perkCardGrid" class="perk-card-grid"></div>
+
+            <p id="perkBuildNote" class="perk-build-note">
+                Pick a style, then roll a build. Lock perks you like and reroll the rest.
+            </p>
+        </details>
+
         <div class="buttons">
 
             <button id="randomButton" class="primary-button">
@@ -84,6 +128,14 @@
                 <label class="mode-toggle" for="challengeModeToggle">
                     <span class="mode-toggle-text">Challenge mode</span>
                     <input id="challengeModeToggle" type="checkbox">
+                    <span class="mode-toggle-track" aria-hidden="true">
+                        <span class="mode-toggle-thumb"></span>
+                    </span>
+                </label>
+
+                <label class="mode-toggle" for="perkBuildToggle">
+                    <span class="mode-toggle-text">Random perk builds</span>
+                    <input id="perkBuildToggle" type="checkbox">
                     <span class="mode-toggle-track" aria-hidden="true">
                         <span class="mode-toggle-thumb"></span>
                     </span>
@@ -327,7 +379,7 @@
         </section>
 
         <footer class="app-footer">
-            <span class="version-label">v1.8.3</span>
+            <span class="version-label">v1.9.2</span>
             <span>Unofficial fan-made Dead by Daylight randomizer by The Rodfather.</span>
             <span class="credit-line">Killer portraits credited to DVVEET's Portrait Pack.</span>
             <span>Not affiliated with or endorsed by Behaviour Interactive.</span>
@@ -393,6 +445,7 @@
 </section>
 
 <script src="killers.js"></script>
+<script src="killer-perks.js"></script>
 <script src="script.js"></script>
 
 </body>

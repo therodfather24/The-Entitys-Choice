@@ -8,6 +8,8 @@ const matchHistoryStorageKey = "entitysChoiceMatchHistory";
 const statSettingsStorageKey = "entitysChoiceStatSettings";
 const challengeModeStorageKey = "entitysChoiceChallengeMode";
 const challengeCategoriesStorageKey = "entitysChoiceChallengeCategories";
+const perkBuildsStorageKey = "entitysChoicePerkBuildsEnabled";
+const recentPerkBuildsStorageKey = "entitysChoiceRecentPerkBuilds";
 const statsDateFilterStorageKey = "entitysChoiceStatsDateFilter";
 const setupCompleteStorageKey = "entitysChoiceSetupComplete";
 const appStorageKeys = [
@@ -21,6 +23,8 @@ const appStorageKeys = [
     statSettingsStorageKey,
     challengeModeStorageKey,
     challengeCategoriesStorageKey,
+    perkBuildsStorageKey,
+    recentPerkBuildsStorageKey,
     statsDateFilterStorageKey,
     setupCompleteStorageKey
 ];
@@ -120,12 +124,65 @@ const killerChallenges = [
         description: "Prioritize long chases over generator defense."
     }
 ];
+const perkBuildStyles = {
+    balanced: {
+        label: "Balanced",
+        names: ["Balanced Pressure", "All-Purpose Trial", "Entity's Toolbox"],
+        roles: [
+            ["slowdown", "regression", "generator", "block"],
+            ["aura", "info", "tracking", "scream"],
+            ["chase", "haste", "pallet", "vault"],
+            ["hook", "endgame", "hex", "pressure", "obsession"]
+        ]
+    },
+    slowdown: {
+        label: "Slowdown",
+        names: ["Generator Lockdown", "Long Trial", "No Easy Repairs"],
+        tags: ["slowdown", "regression", "generator", "block", "hook"]
+    },
+    aura: {
+        label: "Aura / Info",
+        names: ["Eyes in the Fog", "Information Hunt", "Nowhere to Hide"],
+        tags: ["aura", "info", "tracking", "scream", "healing"]
+    },
+    chase: {
+        label: "Chase",
+        names: ["Relentless Chase", "No Pallet Is Safe", "Blood Rush"],
+        tags: ["chase", "haste", "pallet", "vault", "stun", "break", "basic-attack"]
+    },
+    stealth: {
+        label: "Stealth",
+        names: ["Quiet Approach", "From the Dark", "Silent Pressure"],
+        tags: ["stealth", "undetectable", "oblivious", "terror-radius", "aura"]
+    },
+    hex: {
+        label: "Hex",
+        names: ["Totem Gamble", "Hex Trial", "Cursed Pressure"],
+        tags: ["hex", "totem", "slowdown", "pressure"]
+    },
+    "scourge-hook": {
+        label: "Scourge Hook",
+        names: ["Hook Pressure", "Pain Trial", "Basement Invitation"],
+        tags: ["scourge-hook", "hook", "regression", "aura", "slowdown"]
+    },
+    endgame: {
+        label: "Endgame",
+        names: ["Exit Gate Panic", "Last Chance", "No One Leaves Clean"],
+        tags: ["endgame", "gate", "exposed", "hook", "obsession"]
+    },
+    chaos: {
+        label: "Chaos",
+        names: ["Entity's Whim", "Wildcard Trial", "Questionable Decisions"],
+        tags: []
+    }
+};
 
 const button = document.getElementById("randomButton");
 const resetButton = document.getElementById("resetButton");
 const endResetButton = document.getElementById("endResetButton");
 const removePickedToggle = document.getElementById("removePickedToggle");
 const challengeModeToggle = document.getElementById("challengeModeToggle");
+const perkBuildToggle = document.getElementById("perkBuildToggle");
 const challengeLoadoutToggle = document.getElementById("challengeLoadoutToggle");
 const challengePlaystyleToggle = document.getElementById("challengePlaystyleToggle");
 const challengePressureToggle = document.getElementById("challengePressureToggle");
@@ -140,6 +197,13 @@ const finishSetupButton = document.getElementById("finishSetupButton");
 const display = document.getElementById("killerDisplay");
 const selectedKillerStats = document.getElementById("selectedKillerStats");
 const challengeDisplay = document.getElementById("challengeDisplay");
+const perkBuildPanel = document.getElementById("perkBuildPanel");
+const perkStyleSelect = document.getElementById("perkStyleSelect");
+const rollPerksButton = document.getElementById("rollPerksButton");
+const clearPerkBuildButton = document.getElementById("clearPerkBuildButton");
+const perkBuildMeta = document.getElementById("perkBuildMeta");
+const perkCardGrid = document.getElementById("perkCardGrid");
+const perkBuildNote = document.getElementById("perkBuildNote");
 const remaining = document.getElementById("remaining");
 const cycleSummaryGrid = document.getElementById("cycleSummaryGrid");
 const image = document.getElementById("killerImage");
@@ -191,6 +255,11 @@ let isSpinning = false;
 let shouldRemovePickedKillers = loadRemovePickedSetting();
 let challengeModeEnabled = loadChallengeModeSetting();
 let challengeCategories = loadChallengeCategories();
+let perkBuildsEnabled = loadPerkBuildsSetting();
+let currentPerkBuild = [];
+let currentPerkBuildName = "";
+let lockedPerkIds = new Set();
+let recentPerkBuilds = loadRecentPerkBuilds();
 let currentKiller = null;
 let trackedMatches = loadTrackedMatches();
 let statSettings = loadStatSettings();
@@ -199,6 +268,7 @@ let isHistoryCollapsed = true;
 
 removePickedToggle.checked = shouldRemovePickedKillers;
 challengeModeToggle.checked = challengeModeEnabled;
+perkBuildToggle.checked = perkBuildsEnabled;
 applyChallengeCategoriesToInputs();
 statsDateFilter.value = loadStatsDateFilter();
 trackKillsToggle.checked = statSettings.kills;
@@ -216,6 +286,7 @@ updateEndScreen();
 updateTrackerVisibility();
 updateStatFields();
 updateStats();
+updatePerkBuildVisibility();
 updateSetupScreen();
 
 button.addEventListener("click", randomize);
@@ -224,6 +295,18 @@ resetButton.addEventListener("click", resetPool);
 endResetButton.addEventListener("click", resetPool);
 removePickedToggle.addEventListener("change", updateRemovePickedMode);
 challengeModeToggle.addEventListener("change", updateChallengeMode);
+perkBuildToggle.addEventListener("change", updatePerkBuildMode);
+rollPerksButton.addEventListener("click", () => rollPerkBuild());
+clearPerkBuildButton.addEventListener("click", clearPerkBuild);
+perkStyleSelect.addEventListener("change", () => {
+    if(currentPerkBuild.length > 0){
+        lockedPerkIds.clear();
+        currentPerkBuildName = "";
+        rollPerkBuild();
+    } else {
+        renderPerkBuild();
+    }
+});
 challengeLoadoutToggle.addEventListener("change", updateChallengeCategories);
 challengePlaystyleToggle.addEventListener("change", updateChallengeCategories);
 challengePressureToggle.addEventListener("change", updateChallengeCategories);
@@ -569,6 +652,7 @@ function finishSetup(){
     updateOwnedKillerList();
     updateEndScreen();
     updateStats();
+    prunePerkBuildForOwnership();
 
 }
 
@@ -768,11 +852,52 @@ function updateRecentlyPlayed(){
         const name = document.createElement("span");
         name.textContent = killer.name;
 
+        const trackButton = document.createElement("button");
+        trackButton.className = "recent-track-button";
+        trackButton.type = "button";
+        trackButton.textContent = "Track";
+        trackButton.addEventListener("click", () => {
+            trackRecentKiller(killer.id);
+        });
+
         item.appendChild(portrait);
         item.appendChild(name);
+        item.appendChild(trackButton);
 
         recentList.appendChild(item);
 
+    });
+
+}
+
+function trackRecentKiller(killerId){
+
+    const killer = killers.find(killer => killer.id === killerId);
+
+    if(!killer){
+        return;
+    }
+
+    currentKiller = killer;
+    editingMatchId = null;
+    matchForm.reset();
+    applyStatSettingsToInputs();
+
+    display.textContent = killer.name;
+    display.classList.remove("killer-name-spinning");
+    display.classList.add("killer-name-revealed");
+    image.src = killer.image;
+    image.alt = `${killer.name} Portrait`;
+    image.classList.remove("portrait-spinning");
+    image.classList.add("portrait-revealed");
+    image.style.display = "block";
+
+    updateTrackerVisibility();
+    updateSelectedKillerStats();
+    showMatchForm();
+    matchTracker.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
     });
 
 }
@@ -1104,6 +1229,367 @@ function syncHistoryVisibility(){
 
 }
 
+function rollPerkBuild(){
+
+    const availablePerks = getOwnedKillerPerks();
+
+    if(availablePerks.length < 4){
+        currentPerkBuild = [];
+        lockedPerkIds.clear();
+        renderPerkBuild("You need at least four owned-killer perks available to roll a build.");
+        return;
+    }
+
+    const styleKey = perkStyleSelect.value || "balanced";
+    const style = perkBuildStyles[styleKey] || perkBuildStyles.balanced;
+    const availableIds = new Set(availablePerks.map(perk => perk.id));
+    const lockedPerks = currentPerkBuild
+        .filter(perk => lockedPerkIds.has(perk.id) && availableIds.has(perk.id))
+        .slice(0, 4);
+    const usedIds = new Set(lockedPerks.map(perk => perk.id));
+    const killerCounts = getKillerCounts(lockedPerks);
+    const nextBuild = [...lockedPerks];
+
+    if(style.roles){
+        style.roles.forEach(roleTags => {
+            if(nextBuild.length >= 4){
+                return;
+            }
+
+            const perk = selectWeightedPerk(availablePerks, roleTags, usedIds, killerCounts, styleKey);
+
+            if(perk){
+                nextBuild.push(perk);
+                usedIds.add(perk.id);
+                killerCounts[perk.killerId] = (killerCounts[perk.killerId] || 0) + 1;
+            }
+        });
+    }
+
+    while(nextBuild.length < 4){
+        const perk = selectWeightedPerk(availablePerks, style.tags || [], usedIds, killerCounts, styleKey);
+
+        if(!perk){
+            break;
+        }
+
+        nextBuild.push(perk);
+        usedIds.add(perk.id);
+        killerCounts[perk.killerId] = (killerCounts[perk.killerId] || 0) + 1;
+    }
+
+    currentPerkBuild = nextBuild.slice(0, 4);
+    currentPerkBuildName = getRandomStyleName(style);
+    lockedPerkIds = new Set([...lockedPerkIds].filter(id => currentPerkBuild.some(perk => perk.id === id)));
+    rememberPerkBuild(currentPerkBuild);
+    renderPerkBuild();
+
+}
+
+function rerollSinglePerk(perkId){
+
+    const availablePerks = getOwnedKillerPerks();
+    const styleKey = perkStyleSelect.value || "balanced";
+    const style = perkBuildStyles[styleKey] || perkBuildStyles.balanced;
+    const oldPerk = currentPerkBuild.find(perk => perk.id === perkId);
+    const usedIds = new Set(currentPerkBuild.map(perk => perk.id));
+    const remainingBuild = currentPerkBuild.filter(perk => perk.id !== perkId);
+    const killerCounts = getKillerCounts(remainingBuild);
+
+    usedIds.delete(perkId);
+
+    const preferredTags = oldPerk ? oldPerk.tags : style.tags || [];
+    const replacement = selectWeightedPerk(availablePerks, preferredTags, usedIds, killerCounts, styleKey);
+
+    if(!replacement){
+        return;
+    }
+
+    currentPerkBuild = currentPerkBuild.map(perk => perk.id === perkId ? replacement : perk);
+    lockedPerkIds.delete(perkId);
+    rememberPerkBuild(currentPerkBuild);
+    renderPerkBuild();
+
+}
+
+function togglePerkLock(perkId){
+
+    if(lockedPerkIds.has(perkId)){
+        lockedPerkIds.delete(perkId);
+    } else {
+        lockedPerkIds.add(perkId);
+    }
+
+    renderPerkBuild();
+
+}
+
+function clearPerkBuild(){
+
+    currentPerkBuild = [];
+    currentPerkBuildName = "";
+    lockedPerkIds.clear();
+    renderPerkBuild();
+
+}
+
+function renderPerkBuild(message){
+
+    const availablePerks = getOwnedKillerPerks();
+    const styleKey = perkStyleSelect.value || "balanced";
+    const style = perkBuildStyles[styleKey] || perkBuildStyles.balanced;
+
+    perkBuildMeta.innerHTML = "";
+    perkCardGrid.innerHTML = "";
+
+    if(currentPerkBuild.length === 0){
+        addPerkMetaChip(`Style: ${style.label}`);
+        addPerkMetaChip(`${availablePerks.length} perks in owned pool`);
+        addPerkMetaChip("Locks + single rerolls ready");
+
+        const emptyCard = document.createElement("article");
+        emptyCard.className = "perk-card perk-card-empty";
+        emptyCard.innerHTML = `
+            <strong>No build rolled</strong>
+            <span>Owned killers only</span>
+            <p>Choose a style and roll when you want a perk build for the selected killer.</p>
+        `;
+        perkCardGrid.appendChild(emptyCard);
+        perkBuildNote.textContent = message || "Pick a style, then roll a build. Lock perks you like and reroll the rest.";
+        return;
+    }
+
+    const buildName = currentPerkBuildName || getRandomStyleName(style);
+    const tagSummary = summarizeBuildTags(currentPerkBuild);
+
+    addPerkMetaChip(`Build: ${buildName}`);
+    addPerkMetaChip(`Style: ${style.label}`);
+    addPerkMetaChip(`${availablePerks.length} perks in owned pool`);
+
+    if(tagSummary){
+        addPerkMetaChip(tagSummary);
+    }
+
+    currentPerkBuild.forEach(perk => {
+        const killer = killers.find(killer => killer.id === perk.killerId);
+        const isLocked = lockedPerkIds.has(perk.id);
+        const card = document.createElement("article");
+
+        card.className = isLocked ? "perk-card perk-card-locked" : "perk-card";
+
+        const header = document.createElement("div");
+        const name = document.createElement("strong");
+        const source = document.createElement("span");
+        const tags = document.createElement("div");
+        const actions = document.createElement("div");
+        const lockButton = document.createElement("button");
+        const rerollButton = document.createElement("button");
+
+        name.textContent = perk.name;
+        source.textContent = killer ? killer.name : "Unknown Killer";
+        header.appendChild(name);
+        header.appendChild(source);
+
+        tags.className = "perk-tags";
+        perk.tags.slice(0, 3).forEach(tag => {
+            const chip = document.createElement("em");
+            chip.textContent = formatTagName(tag);
+            tags.appendChild(chip);
+        });
+
+        actions.className = "perk-card-actions";
+        lockButton.type = "button";
+        lockButton.textContent = isLocked ? "Locked" : "Lock";
+        lockButton.addEventListener("click", () => togglePerkLock(perk.id));
+
+        rerollButton.type = "button";
+        rerollButton.textContent = "Reroll";
+        rerollButton.disabled = isLocked;
+        rerollButton.addEventListener("click", () => rerollSinglePerk(perk.id));
+
+        actions.appendChild(lockButton);
+        actions.appendChild(rerollButton);
+
+        card.appendChild(header);
+        card.appendChild(tags);
+        card.appendChild(actions);
+        perkCardGrid.appendChild(card);
+    });
+
+    perkBuildNote.textContent = "Builds use perks from killers marked as owned. Lock anything you like, then reroll the rest.";
+
+}
+
+function addPerkMetaChip(text){
+
+    const chip = document.createElement("span");
+    chip.textContent = text;
+    perkBuildMeta.appendChild(chip);
+
+}
+
+function getOwnedKillerPerks(){
+
+    if(typeof killerPerks === "undefined"){
+        return [];
+    }
+
+    const ownedKillerIds = new Set(killers
+        .filter(killer => !notOwnedIds.includes(killer.id))
+        .map(killer => killer.id));
+
+    return killerPerks.filter(perk => ownedKillerIds.has(perk.killerId));
+
+}
+
+function prunePerkBuildForOwnership(){
+
+    const ownedPerkIds = new Set(getOwnedKillerPerks().map(perk => perk.id));
+
+    currentPerkBuild = currentPerkBuild.filter(perk => ownedPerkIds.has(perk.id));
+    lockedPerkIds = new Set([...lockedPerkIds].filter(id => ownedPerkIds.has(id)));
+
+    if(currentPerkBuild.length === 0){
+        currentPerkBuildName = "";
+    }
+
+    if(perkBuildsEnabled){
+        renderPerkBuild();
+    }
+
+}
+
+function selectWeightedPerk(perks, targetTags, usedIds, killerCounts, styleKey){
+
+    const candidates = perks
+        .filter(perk => !usedIds.has(perk.id))
+        .map(perk => ({
+            perk,
+            weight: getPerkWeight(perk, targetTags, killerCounts, styleKey)
+        }))
+        .filter(candidate => candidate.weight > 0);
+
+    if(candidates.length === 0){
+        return null;
+    }
+
+    const totalWeight = candidates.reduce((sum, candidate) => sum + candidate.weight, 0);
+    let roll = Math.random() * totalWeight;
+
+    for(const candidate of candidates){
+        roll -= candidate.weight;
+
+        if(roll <= 0){
+            return candidate.perk;
+        }
+    }
+
+    return candidates[candidates.length - 1].perk;
+
+}
+
+function getPerkWeight(perk, targetTags, killerCounts, styleKey){
+
+    let weight = 8;
+    const tagMatches = perk.tags.filter(tag => targetTags.includes(tag)).length;
+    const recentlyUsed = recentPerkBuilds.flat().includes(perk.id);
+    const sameKillerCount = killerCounts[perk.killerId] || 0;
+
+    if(styleKey === "chaos"){
+        weight += Math.floor(Math.random() * 10);
+    } else {
+        weight += tagMatches * 18;
+    }
+
+    if(recentlyUsed){
+        weight -= 5;
+    }
+
+    if(sameKillerCount >= 1){
+        weight -= 4;
+    }
+
+    if(sameKillerCount >= 2 && styleKey !== "chaos"){
+        weight -= 10;
+    }
+
+    return Math.max(weight, 1);
+
+}
+
+function getKillerCounts(perks){
+
+    return perks.reduce((counts, perk) => {
+        counts[perk.killerId] = (counts[perk.killerId] || 0) + 1;
+        return counts;
+    }, {});
+
+}
+
+function getRandomStyleName(style){
+
+    return style.names[Math.floor(Math.random() * style.names.length)];
+
+}
+
+function summarizeBuildTags(perks){
+
+    const tagCounts = {};
+
+    perks.forEach(perk => {
+        perk.tags.forEach(tag => {
+            tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+        });
+    });
+
+    const topTags = Object.entries(tagCounts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 2)
+        .map(([tag]) => formatTagName(tag));
+
+    return topTags.length > 0 ? topTags.join(" + ") : "";
+
+}
+
+function formatTagName(tag){
+
+    return tag
+        .split("-")
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+
+}
+
+function rememberPerkBuild(perks){
+
+    if(perks.length !== 4){
+        return;
+    }
+
+    recentPerkBuilds = [
+        perks.map(perk => perk.id),
+        ...recentPerkBuilds
+    ].slice(0, 8);
+
+    localStorage.setItem(recentPerkBuildsStorageKey, JSON.stringify(recentPerkBuilds));
+
+}
+
+function loadRecentPerkBuilds(){
+
+    const savedBuilds = JSON.parse(localStorage.getItem(recentPerkBuildsStorageKey));
+
+    if(!Array.isArray(savedBuilds)){
+        return [];
+    }
+
+    return savedBuilds
+        .filter(build => Array.isArray(build))
+        .map(build => build.filter(id => typeof id === "string"))
+        .slice(0, 8);
+
+}
+
 function exportSaveData(){
 
     const saveData = {
@@ -1118,6 +1604,8 @@ function exportSaveData(){
             removePickedKillers: shouldRemovePickedKillers,
             challengeMode: challengeModeEnabled,
             challengeCategories: {...challengeCategories},
+            perkBuildsEnabled,
+            recentPerkBuilds: [...recentPerkBuilds],
             statsDateFilter: statsDateFilter.value,
             selectedKillers: readSavedJson(selectedStorageKey, []),
             trackedMatches: [...trackedMatches],
@@ -1194,6 +1682,8 @@ function applyImportedSaveData(data){
     localStorage.setItem(removePickedStorageKey, JSON.stringify(data.removePickedKillers !== false));
     localStorage.setItem(challengeModeStorageKey, JSON.stringify(data.challengeMode === true));
     localStorage.setItem(challengeCategoriesStorageKey, JSON.stringify(normalizeImportedChallengeCategories(data.challengeCategories)));
+    localStorage.setItem(perkBuildsStorageKey, JSON.stringify(data.perkBuildsEnabled === true));
+    localStorage.setItem(recentPerkBuildsStorageKey, JSON.stringify(normalizeImportedPerkBuilds(data.recentPerkBuilds)));
     localStorage.setItem(statsDateFilterStorageKey, ["all", "week", "month", "cycle"].includes(data.statsDateFilter) ? data.statsDateFilter : "all");
     localStorage.setItem(matchHistoryStorageKey, JSON.stringify(normalizeImportedMatches(data.trackedMatches, validIds)));
     localStorage.setItem(statSettingsStorageKey, JSON.stringify(normalizeImportedStatSettings(data.statSettings)));
@@ -1205,15 +1695,21 @@ function applyImportedSaveData(data){
     shouldRemovePickedKillers = loadRemovePickedSetting();
     challengeModeEnabled = loadChallengeModeSetting();
     challengeCategories = loadChallengeCategories();
+    perkBuildsEnabled = loadPerkBuildsSetting();
+    recentPerkBuilds = loadRecentPerkBuilds();
+    currentPerkBuild = [];
+    lockedPerkIds.clear();
     trackedMatches = loadTrackedMatches();
     statSettings = loadStatSettings();
     currentKiller = null;
     finalKiller = null;
+    currentPerkBuildName = "";
     editingMatchId = null;
     isSpinning = false;
 
     removePickedToggle.checked = shouldRemovePickedKillers;
     challengeModeToggle.checked = challengeModeEnabled;
+    perkBuildToggle.checked = perkBuildsEnabled;
     applyChallengeCategoriesToInputs();
     statsDateFilter.value = loadStatsDateFilter();
     applyStatSettingsToInputs();
@@ -1239,6 +1735,7 @@ function applyImportedSaveData(data){
     updateTrackerVisibility();
     updateStatFields();
     updateStats();
+    updatePerkBuildVisibility();
     updateSetupScreen();
 
 }
@@ -1320,6 +1817,22 @@ function normalizeImportedChallengeCategories(categories){
         pressure: !categories || categories.pressure !== false,
         mercy: !categories || categories.mercy !== false
     };
+
+}
+
+function normalizeImportedPerkBuilds(builds){
+
+    if(typeof killerPerks === "undefined" || !Array.isArray(builds)){
+        return [];
+    }
+
+    const validPerkIds = new Set(killerPerks.map(perk => perk.id));
+
+    return builds
+        .filter(build => Array.isArray(build))
+        .map(build => build.filter(id => validPerkIds.has(id)).slice(0, 4))
+        .filter(build => build.length > 0)
+        .slice(0, 8);
 
 }
 
@@ -1707,6 +2220,24 @@ function updateChallengeMode(){
 
 }
 
+function updatePerkBuildMode(){
+
+    perkBuildsEnabled = perkBuildToggle.checked;
+    localStorage.setItem(perkBuildsStorageKey, JSON.stringify(perkBuildsEnabled));
+    updatePerkBuildVisibility();
+
+}
+
+function updatePerkBuildVisibility(){
+
+    perkBuildPanel.hidden = !perkBuildsEnabled;
+
+    if(perkBuildsEnabled){
+        renderPerkBuild();
+    }
+
+}
+
 function updateChallengeCategories(){
 
     challengeCategories = {
@@ -1758,6 +2289,14 @@ function loadRemovePickedSetting(){
 function loadChallengeModeSetting(){
 
     const savedSetting = JSON.parse(localStorage.getItem(challengeModeStorageKey));
+
+    return savedSetting === null ? false : savedSetting;
+
+}
+
+function loadPerkBuildsSetting(){
+
+    const savedSetting = JSON.parse(localStorage.getItem(perkBuildsStorageKey));
 
     return savedSetting === null ? false : savedSetting;
 

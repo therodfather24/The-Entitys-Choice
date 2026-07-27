@@ -1,5 +1,40 @@
 # Changelog
 
+## v1.9.2 - Perk Card Layout Fix
+
+### Fixed
+- Fixed Random Perk Build card controls overlapping inside smaller card widths.
+- Added an earlier two-column layout for perk cards so the panel stays clean on narrower screens.
+
+## v1.9.1 - Fog Polish
+
+### Changed
+- Reworked the animated fog into softer layered mist with slower drift.
+- Removed the more obvious repeating fog streaks so the background feels cleaner and more cinematic.
+
+## v1.9 - Random Perk Builds
+
+### Added
+- Added a real Random Perk Build panel behind the Settings toggle.
+- Added perk styles for balanced, slowdown, aura/info, chase, stealth, hex, scourge hook, endgame, and chaos builds.
+- Added perk locking and single-perk rerolls.
+- Added all current killer teachable perks, including The Slasher's perks.
+
+### Changed
+- Random perk builds now use only perks from killers marked as owned.
+- Recent perk rolls are remembered locally to reduce repetitive builds.
+
+## v1.8.5 - Optional Perk Build Preview
+
+### Changed
+- Moved the Random Perk Build mockup behind a Settings toggle.
+- Made the perk build preview collapse by default so it does not dominate the main page.
+
+## v1.8.4 - Late Match Tracking
+
+### Added
+- Added a compact Track button to Recently Played entries so a saved recent killer can be reopened for match tracking after returning to the page.
+
 ## v1.8.3 - Portrait Credit
 
 ### Added

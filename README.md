@@ -15,6 +15,9 @@ It chooses a random killer, removes that killer from the available pool, remembe
 - Current Cycle summary for selected, remaining, tracked matches, and average kills
 - Optional Challenge Mode after a killer is selected
 - Challenge type filters and challenge rerolling
+- Optional Random Perk Build toggle using owned-killer perks
+- Perk build styles for balanced, slowdown, aura/info, chase, stealth, hex, scourge hook, endgame, and chaos rolls
+- Perk locking and single-perk rerolls
 - Optional killer match tracking after a killer is selected
 - Toggleable stat fields for kills, generators left, map, and notes
 - Overall and per-killer stat summaries
@@ -25,6 +28,7 @@ It chooses a random killer, removes that killer from the available pool, remembe
 - Export and import for browser save data
 - Safety tools for setup reset, progress clearing, and full local data clearing
 - Recently Played panel
+- Late match tracking from Recently Played entries
 - End-of-pool completion screen
 - Saved progress with browser localStorage
 - DVVEET portrait pack support where available
