@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.9.3 - Perk Build Visibility Fix
+
+### Fixed
+- Random Perk Builds now opens the perk panel when enabled.
+- A perk build now rolls automatically after a killer is selected when Random Perk Builds is turned on.
+- Resetting the killer pool clears the current perk build so old perks do not stay on screen.
+
 ## v1.9.2 - Perk Card Layout Fix
 
 ### Fixed

@@ -458,6 +458,7 @@ function finishRandomize(chosen){
     updateTrackerVisibility();
     updateSelectedKillerStats();
     updateChallenge(chosen);
+    rollPerkBuildForSelection();
     clearGalleryHighlight();
     updateEndScreen();
     updateCycleSummary();
@@ -495,6 +496,7 @@ function resetPool(){
     image.style.display = "none";
     finalKiller = null;
     currentKiller = null;
+    clearPerkBuild();
     hideSelectedKillerStats();
     hideChallenge();
     hideMatchForm();
@@ -1330,6 +1332,21 @@ function clearPerkBuild(){
     currentPerkBuildName = "";
     lockedPerkIds.clear();
     renderPerkBuild();
+
+}
+
+function rollPerkBuildForSelection(){
+
+    if(!perkBuildsEnabled || !currentKiller){
+        return;
+    }
+
+    perkBuildPanel.hidden = false;
+    perkBuildPanel.open = true;
+    currentPerkBuild = [];
+    currentPerkBuildName = "";
+    lockedPerkIds.clear();
+    rollPerkBuild();
 
 }
 
@@ -2232,7 +2249,16 @@ function updatePerkBuildVisibility(){
 
     perkBuildPanel.hidden = !perkBuildsEnabled;
 
-    if(perkBuildsEnabled){
+    if(!perkBuildsEnabled){
+        perkBuildPanel.open = false;
+        return;
+    }
+
+    perkBuildPanel.open = true;
+
+    if(currentKiller && currentPerkBuild.length === 0){
+        rollPerkBuildForSelection();
+    } else {
         renderPerkBuild();
     }
 
